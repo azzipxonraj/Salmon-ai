@@ -1,0 +1,99 @@
+---
+title: "Background_research"
+author: "Jarno Jacob Duiker"
+date: "2025-07-07"
+output: html_document
+bibliography: refrences.bib
+---
+
+## The R MICE package
+
+Imputation is generating data that replaces the NA values in a dataset. This is done so that data doesn't get lost. When there are only 10 NAs in the data, instead of deleting these 10 rows containing the NAs, it is better to replace them with nearby values, like the median of the total number. In imputation, multiple- and single-imputation exist.
+
+Single imputation is a method for handling missing data in a dataset by replacing each missing value with a single, estimated value, thereby creating a complete dataset. Some single imputation methods include the following. @Dettori2018
+
+-   Mean imputation: replacing missing values with the mean of the observed values for that variable.
+
+-   Last observation carried forward: Replacing missing values with the last observed value.
+
+-   Worst Observation carried forward: replacing the missing values with the worst observed value (Could throw the data off balance)
+
+These ways of fixing NAs come with some drawbacks. This is because they often depend on assumptions that are often unrealistic, which frequently results in an underestimation of the variability and an inaccurately low P value. @Jakobsen2017 @Little2012
+
+So, how do we impute our data? The answer lies in the R mice package that uses multiple imputation to fix the NAs that are within our data. MICE also stands for Multivariate Imputation by Chained Equations. This package creates multiple replacement values for multivariate missing data. The MICE algorithm can estimate mixes of continuous, binary, unordered categorical and ordered categorical data. This makes it a perfect tool to use on our blood data.
+
+## Filtering data
+
+To filter our data to see if a person has B12 problems, there are a multitude of conditions that have to be met. For each blood test variable, a condition was made that had a range that was suggested by medical specialists. Seen below is every condition accompanied by its range.
+
+```{r}
+  condition_b12 <- (df$VITB12 >= 200) & (df$VITB12 <= 700)
+  condition_mcv <- (df$MCV >= 80)
+  condition_rdw <- (df$RDW >= 8) & (df$RDW <= 18)
+  condition_mch <- (df$MCH >= 23) & (df$MCH <= 40)
+  condition_mchc <- (df$MCHC >= 30) & (df$MCHC <= 36)
+  condition_rbc <- (df$RBC >= 3) & (df$RBC <= 6.7)
+  condition_wbc <- (df$WBC >= 8) & (df$WBC <= 14)
+  condition_plt <- (df$PLT >= 150) & (df$PLT <= 400)
+  condition_neutro <- (df$NEUTRO >= 2) & (df$NEUTRO <= 7.8)
+  condition_lymfo <- (df$LYMFO >= 1) & (df$LYMFO <= 4)
+  condition_mono <- (df$MONO >= 0) & (df$MONO <= 1)
+  condition_baso <- (df$BASO >= 0) & (df$BASO <= 0.2)
+  condition_eo <- (df$EO >= 0) & (df$EO <= 1)
+  condition_crp <- (df$CRP < 5)
+```
+
+Now we put all these separate conditions into 1 big condition to make it cleaner to code with
+
+```{r}
+all_conditions <- condition_b12 &
+                    condition_mcv &
+                    condition_rdw &
+                    condition_mch &
+                    condition_mchc &
+                    condition_rbc &
+                    condition_wbc &
+                    condition_plt &
+                    condition_neutro &
+                    condition_lymfo &
+                    condition_mono &
+                    condition_baso &
+                    condition_eo &
+                    condition_crp
+```
+
+Create a copy to avoid modifying the original DataFrame, then apply the label based on whether all conditions are met.
+
+```{r}
+df_labeled <- df
+
+  df_labeled$Vitamin_B12_Problem_Label <- ifelse(all_conditions, '1', '0')
+
+  return(df_labeled)
+```
+
+Then replace all missing values in the labelled table with yes because they do not meet all the conditions; therefore, they cannot be marked as no disease. Shown in the code below.
+
+```{r}
+df_processed$Vitamin_B12_Problem_Label[is.na(df_processed$Vitamin_B12_Problem_Label)] <- 1
+print(df_processed)
+```
+
+Here the data is filtered for Kidney_problems. This is done with eGFR, when this is below 60 a 1 is given to the person to show they have this kidney problem.
+
+```{r}
+filter_blood_data <- function(df_input) { # Use a different parameter name to avoid confusion
+  
+  condition_eGFR <- (df_input$eGFR < 60)
+  df_input$Kidney_problem <- ifelse(condition_eGFR, '1', '0')
+  
+  return(df_input) # Explicitly return the modified data frame
+}
+
+# Process the DataFrame
+df_processed <- filter_blood_data(df_processed) # Pass df_processed and reassign the result
+
+print(df_processed)
+```
+
+# Refrences

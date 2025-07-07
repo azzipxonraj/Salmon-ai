@@ -56,11 +56,7 @@ filter_blood_data <- function(df) {
                     condition_baso &
                     condition_eo &
                     condition_crp
-
-  # Create a copy to avoid modifying the original DataFrame directly
-  # In R, functions generally return new objects, so explicit copy is often not needed
-  # if you're assigning the result, but `df_labeled <- df` creates a shallow copy
-  # of the data frame structure, and modifications to columns will create new vectors.
+ 
   df_labeled <- df
 
   # Apply the label based on whether all conditions are met
