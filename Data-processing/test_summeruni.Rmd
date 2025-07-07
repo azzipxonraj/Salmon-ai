@@ -1,0 +1,118 @@
+---
+title: "test_summeruniversity"
+author: "Jarno Jacob Duiker"
+date: "2025-06-30"
+output: html_document
+---
+
+```{r}
+df <- read.csv2("~/github_bioinf/summerschool_tests/Dataset_AnemieD.csv")
+```
+
+```{r}
+
+filter_blood_data <- function(df) {
+  #' Filters an R DataFrame based on specified blood test conditions and adds a label.
+  #'
+  #' @param df A data.frame containing blood test results.
+  #'           Expected columns include 'VITB12', 'MCV', 'RDW', 'MCH',
+  #'           'MCHC', 'RBC', 'WBC', 'PLT', 'NEUTRO', 'LYMFO',
+  #'           'MONO', 'BASO', 'EO', 'CRP'.
+  #'
+  #' @return A new data.frame containing the original data with an
+  #'         additional column 'Vitamin_B12_Problem_Label'.
+  
+
+  # Define the conditions for filtering
+  # Use `with(df, ...)` or `df$` to access columns directly within the function
+  condition_b12 <- (df$VITB12 >= 200) & (df$VITB12 <= 700)
+  condition_mcv <- (df$MCV >= 80)
+  condition_rdw <- (df$RDW >= 8) & (df$RDW <= 18)
+  condition_mch <- (df$MCH >= 23) & (df$MCH <= 40)
+  condition_mchc <- (df$MCHC >= 30) & (df$MCHC <= 36)
+  condition_rbc <- (df$RBC >= 3) & (df$RBC <= 6.7)
+  condition_wbc <- (df$WBC >= 8) & (df$WBC <= 14)
+  condition_plt <- (df$PLT >= 150) & (df$PLT <= 400)
+  condition_neutro <- (df$NEUTRO >= 2) & (df$NEUTRO <= 7.8)
+  condition_lymfo <- (df$LYMFO >= 1) & (df$LYMFO <= 4)
+  condition_mono <- (df$MONO >= 0) & (df$MONO <= 1)
+  condition_baso <- (df$BASO >= 0) & (df$BASO <= 0.2)
+  condition_eo <- (df$EO >= 0) & (df$EO <= 1)
+  condition_crp <- (df$CRP < 5)
+
+  # Combine all conditions using the logical AND operator (&)
+  # `Reduce` with `&` combines all logical vectors into one.
+  all_conditions <- condition_b12 &
+                    condition_mcv &
+                    condition_rdw &
+                    condition_mch &
+                    condition_mchc &
+                    condition_rbc &
+                    condition_wbc &
+                    condition_plt &
+                    condition_neutro &
+                    condition_lymfo &
+                    condition_mono &
+                    condition_baso &
+                    condition_eo &
+                    condition_crp
+
+  # Create a copy to avoid modifying the original DataFrame directly
+  # In R, functions generally return new objects, so explicit copy is often not needed
+  # if you're assigning the result, but `df_labeled <- df` creates a shallow copy
+  # of the data frame structure, and modifications to columns will create new vectors.
+  df_labeled <- df
+
+  # Apply the label based on whether all conditions are met
+  # `ifelse` is a vectorized way to apply conditional logic
+  df_labeled$Vitamin_B12_Problem_Label <- ifelse(all_conditions, '1', '0')
+
+  return(df_labeled)
+}
+
+
+df_sample <- df
+
+# Process the DataFrame
+df_processed <- filter_blood_data(df_sample)
+
+# Display rows labeled '1'
+cat("Rows with 'Vitamin_B12_Problem_Label' == '1':\n")
+print(subset(df_processed, Vitamin_B12_Problem_Label == '1'))
+
+cat("\nFull processed DataFrame:\n")
+print(df_processed)
+
+```
+
+
+
+
+```{r}
+df_processed$Vitamin_B12_Problem_Label[is.na(df_processed$Vitamin_B12_Problem_Label)] <- 1
+print(df_processed)
+```
+
+```{r}
+filter_blood_data <- function(df_input) { # Use a different parameter name to avoid confusion
+  
+  condition_eGFR <- (df_input$eGFR < 60)
+  df_input$Kidney_problem <- ifelse(condition_eGFR, '1', '0')
+  
+  return(df_input) # Explicitly return the modified data frame
+}
+
+# Process the DataFrame
+df_processed <- filter_blood_data(df_processed) # Pass df_processed and reassign the result
+
+print(df_processed)
+```
+
+
+
+
+```{r}
+write.csv(df_processed, "~/github_bioinf/summerschool_tests/labeled_MMA_data.csv")
+
+```
+
