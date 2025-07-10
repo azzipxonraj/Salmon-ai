@@ -4,24 +4,96 @@ author: "Jarno Jacob Duiker"
 date: "2025-06-30"
 output: html_document
 ---
+```{r}
+library(mice)
+library(VIM)
+```
+
 
 ```{r}
 df <- read.csv2("~/github_bioinf/summerschool_tests/Dataset_AnemieD.csv")
 ```
 
-```{r}
 
+```{r}
+df <- subset(df, select = -c(Identifier, Source, LIS, Classificatie_MMZ, Anemie, FERRITINE, 
+                                                 TSAT, TRF, FE, BSE, FOLIUMZUUR, FZ_deficiency, LDH, HAPTO, Hemolyse,
+                                                 RET_HE, RBC_HE, DELTA_HE, HYPER_HE, HYPO_HE, HFR, IRF, MFR, LFR))
+```
+
+```{r}
+colnames(df)[0:2] <- c("Age", "Gender") 
+colnames(df)[21] <- "Iron deficiency"
+
+print(df)
+```
+
+
+```{r}
+md.pattern(df)
+
+aggr_plot <- aggr(df, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+
+```
+```{r}
+tempData <- mice(df,m=5,maxit=50,meth='pmm',seed=500)
+print(tempData)
+```
+
+
+
+```{r}
+# Get the first completed dataset
+Imputed_data_1 <- complete(tempData, 1)
+print("First Completed Data Frame:")
+print(completed_df_1)
+
+# Get the second completed dataset
+Imputed_data_2 <- complete(tempData, 2)
+print("Second Completed Data Frame:")
+print(completed_df_2)
+
+# You can get all completed datasets in a long format (stacked)
+# This is useful for diagnostics or if you prefer a single large dataframe
+Big_imputed_data <- complete(tempData, "long")
+print("All Completed Data Frames in Long Format:")
+print(head(completed_df_long)) # shows first few rows
+
+```
+
+
+
+```{r}
+as.data.frame(Imputed_data_1) -> completed_df_1
+colnames(completed_df_1)[0:2] <- c("Age", "Gender") 
+colnames(completed_df_1)[21] <- "Iron deficiency"
+
+as.data.frame(Imputed_data_2) -> completed_df_2
+colnames(completed_df_2)[0:2] <- c("Age", "Gender") 
+colnames(completed_df_2)[21] <- "Iron deficiency"
+
+as.data.frame(Big_imputed_data) -> completed_df_long
+colnames(completed_df_long)[0:2] <- c("Age", "Gender") 
+colnames(completed_df_long)[21] <- "Iron deficiency"
+
+print(completed_df_1)
+print(completed_df_2)
+print(head(completed_df_long)) # shows first few rows
+```
+
+
+```{r}
 filter_blood_data <- function(df) {
   #' Filters an R DataFrame based on specified blood test conditions and adds a label.
   #'
   #' @param df A data.frame containing blood test results.
-  #'           Expected columns include 'VITB12', 'MCV', 'RDW', 'MCH',
-  #'           'MCHC', 'RBC', 'WBC', 'PLT', 'NEUTRO', 'LYMFO',
-  #'           'MONO', 'BASO', 'EO', 'CRP'.
+  #'            Expected columns include 'VITB12', 'MCV', 'RDW', 'MCH',
+  #'            'MCHC', 'RBC', 'WBC', 'PLT', 'NEUTRO', 'LYMFO',
+  #'            'MONO', 'BASO', 'EO', 'CRP'.
   #'
   #' @return A new data.frame containing the original data with an
-  #'         additional column 'Vitamin_B12_Problem_Label'.
-  
+  #'          additional column 'Vitamin_B12_Problem_Label'.
+
 
   # Define the conditions for filtering
   # Use `with(df, ...)` or `df$` to access columns directly within the function
@@ -41,7 +113,6 @@ filter_blood_data <- function(df) {
   condition_crp <- (df$CRP < 5)
 
   # Combine all conditions using the logical AND operator (&)
-  # `Reduce` with `&` combines all logical vectors into one.
   all_conditions <- condition_b12 &
                     condition_mcv &
                     condition_rdw &
@@ -56,7 +127,7 @@ filter_blood_data <- function(df) {
                     condition_baso &
                     condition_eo &
                     condition_crp
- 
+
   df_labeled <- df
 
   # Apply the label based on whether all conditions are met
@@ -67,27 +138,85 @@ filter_blood_data <- function(df) {
 }
 
 
-df_sample <- df
+# Process the DataFrame using completed_df_1
+df_processed_from_imputation <- filter_blood_data(completed_df_1)
 
-# Process the DataFrame
-df_processed <- filter_blood_data(df_sample)
+# A label of '1' indicates that all of the blood parameters are within their specified "normal" ranges. This would imply NO B12 shortage (as B12 is within normal range) and no other significant blood abnormalities as defined by your conditions.
 
-# Display rows labeled '1'
-cat("Rows with 'Vitamin_B12_Problem_Label' == '1':\n")
-print(subset(df_processed, Vitamin_B12_Problem_Label == '1'))
+# A label of '0' indicates that at least one of the blood parameters is outside its specified "normal" range. This could mean a B12 shortage (if VITB12 < 200), or it could mean an issue with MCV, RDW, WBC, etc., or a combination. It means there is a problem according to your comprehensive criteria, but not necessarily only a B12 shortage.
 
-cat("\nFull processed DataFrame:\n")
-print(df_processed)
+print(df_processed_from_imputation)
 
 ```
-
-
-
 
 ```{r}
-df_processed$Vitamin_B12_Problem_Label[is.na(df_processed$Vitamin_B12_Problem_Label)] <- 1
-print(df_processed)
+filter_blood_data <- function(df) {
+  #' Filters an R DataFrame based on specified blood test conditions and adds a label.
+  #'
+  #' @param df A data.frame containing blood test results.
+  #'            Expected columns include 'VITB12', 'MCV', 'RDW', 'MCH',
+  #'            'MCHC', 'RBC', 'WBC', 'PLT', 'NEUTRO', 'LYMFO',
+  #'            'MONO', 'BASO', 'EO', 'CRP'.
+  #'
+  #' @return A new data.frame containing the original data with an
+  #'          additional column 'Vitamin_B12_Problem_Label'.
+
+
+  # Define the conditions for filtering
+  # Use `with(df, ...)` or `df$` to access columns directly within the function
+  condition_b12 <- (df$VITB12 >= 200) & (df$VITB12 <= 700)
+  condition_mcv <- (df$MCV >= 80)
+  condition_rdw <- (df$RDW >= 8) & (df$RDW <= 18)
+  condition_mch <- (df$MCH >= 23) & (df$MCH <= 40)
+  condition_mchc <- (df$MCHC >= 30) & (df$MCHC <= 36)
+  condition_rbc <- (df$RBC >= 3) & (df$RBC <= 6.7)
+  condition_wbc <- (df$WBC >= 8) & (df$WBC <= 14)
+  condition_plt <- (df$PLT >= 150) & (df$PLT <= 400)
+  condition_neutro <- (df$NEUTRO >= 2) & (df$NEUTRO <= 7.8)
+  condition_lymfo <- (df$LYMFO >= 1) & (df$LYMFO <= 4)
+  condition_mono <- (df$MONO >= 0) & (df$MONO <= 1)
+  condition_baso <- (df$BASO >= 0) & (df$BASO <= 0.2)
+  condition_eo <- (df$EO >= 0) & (df$EO <= 1)
+  condition_crp <- (df$CRP < 5)
+
+  # Combine all conditions using the logical AND operator (&)
+  all_conditions <- condition_b12 &
+                    condition_mcv &
+                    condition_rdw &
+                    condition_mch &
+                    condition_mchc &
+                    condition_rbc &
+                    condition_wbc &
+                    condition_plt &
+                    condition_neutro &
+                    condition_lymfo &
+                    condition_mono &
+                    condition_baso &
+                    condition_eo &
+                    condition_crp
+
+  df_labeled <- df
+
+  # Apply the label based on whether all conditions are met
+  # `ifelse` is a vectorized way to apply conditional logic
+  df_labeled$Vitamin_B12_Problem_Label <- ifelse(all_conditions, '1', '0')
+
+  return(df_labeled)
+}
+
+
+# Process the DataFrame using completed_df_1
+df_processed_from_imputation_2 <- filter_blood_data(completed_df_2)
+
+# A label of '1' indicates that all of the blood parameters are within their specified "normal" ranges. This would imply NO B12 shortage (as B12 is within normal range) and no other significant blood abnormalities as defined by your conditions.
+
+# A label of '0' indicates that at least one of the blood parameters is outside its specified "normal" range. This could mean a B12 shortage (if VITB12 < 200), or it could mean an issue with MCV, RDW, WBC, etc., or a combination. It means there is a problem according to your comprehensive criteria, but not necessarily only a B12 shortage.
+
+print(df_processed_from_imputation_2)
+
 ```
+
+
 
 ```{r}
 filter_blood_data <- function(df_input) { # Use a different parameter name to avoid confusion
@@ -99,13 +228,36 @@ filter_blood_data <- function(df_input) { # Use a different parameter name to av
 }
 
 # Process the DataFrame
-df_processed <- filter_blood_data(df_processed) # Pass df_processed and reassign the result
+Imputed_data_1_labeled <- filter_blood_data(df_processed_from_imputation) # Pass df_processed and reassign the result
 
-print(df_processed)
+print(Imputed_data_1_labeled)
 ```
 
+```{r}
+filter_blood_data <- function(df_input) { # Use a different parameter name to avoid confusion
+  
+  condition_eGFR <- (df_input$eGFR < 60)
+  df_input$Kidney_problem <- ifelse(condition_eGFR, '1', '0')
+  
+  return(df_input) # Explicitly return the modified data frame
+}
+
+# a 1 here means that the efdr is below 60, indicating a potential kidney problem.
+# Process the DataFrame
+Imputed_data_2_labeled <- filter_blood_data(df_processed_from_imputation_2) # Pass df_processed and reassign the result
+
+print(Imputed_data_2_labeled)
+```
+
+```{r}
+write.csv(Imputed_data_1_labeled, "~/github_bioinf/summerschool_tests/imputed_labeled_MMA_data_1.csv")
+write.csv(Imputed_data_2_labeled, "~/github_bioinf/summerschool_tests/imputed_labeled_MMA_data_2.csv")
+write.csv(completed_df_1, "~/github_bioinf/summerschool_tests/imputed_MMA_data_1.csv")
+write.csv(completed_df_2, "~/github_bioinf/summerschool_tests/imputed_MMA_data_2.csv")
+write.csv(completed_df_long, "~/github_bioinf/summerschool_tests/imputed_labeled_MMA_data_long_form.csv")
 
 
+```
 
 ```{r}
 write.csv(df_processed, "~/github_bioinf/summerschool_tests/labeled_MMA_data.csv")
