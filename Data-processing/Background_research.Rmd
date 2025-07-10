@@ -22,6 +22,14 @@ These ways of fixing NAs come with some drawbacks. This is because they often de
 
 So, how do we impute our data? The answer lies in the R mice package that uses multiple imputation to fix the NAs that are within our data. MICE also stands for Multivariate Imputation by Chained Equations. This package creates multiple replacement values for multivariate missing data. The MICE algorithm can estimate mixes of continuous, binary, unordered categorical and ordered categorical data. This makes it a perfect tool to use on our blood data.
 
+Using the following code i imputed 5 new datasets containing synthetic data, this synthetic data is based of our original dataframe.
+
+```{r}
+tempData <- mice(df,m=5,maxit=50,meth='pmm',seed=500)
+```
+
+Here we see the `mice()` command, this command starts the imputation proces. This however needs a couple parameters. First the dataset it should use in our case called "df" for dataframe. Then it needs an "m" refers to the number of imputed datasets, the standard is 5 so this is why i used this number. The next parameter is "maxit"  refers to the maximum number of iterations the imputation algorithm will run for each imputed dataset. It controls how long the iterative process of imputing missing values continues. Convergence is reached when the imputed values fluctuate around a stable value, indicating the algorithm has found a good solution. "meth" refers to what method is used for the imputation, in this case we used pmm also known as Predictive mean matching this is a method for imputing missing data by finding the observed values that have the closest predicted values to the missing values, based on a regression model. lastly we have seed this gives the randomness to the imputation.
+
 ## Filtering data
 
 To filter our data to see if a person has B12 problems, there are a multitude of conditions that have to be met. For each blood test variable, a condition was made that had a range that was suggested by medical specialists. Seen below is every condition accompanied by its range.
