@@ -7,13 +7,84 @@ output: html_document
 ```{r}
 library(mice)
 library(VIM)
+library(dplyr)
 ```
 
 
 ```{r}
+#macbook
+
 df <- read.csv2("~/github_bioinf/summerschool_tests/Dataset_AnemieD.csv")
 ```
+```{r}
+df_ml <- read.csv2("~/GitHub/Salmon-ai/Data/Dataset_MMA.csv")
 
+```
+
+
+```{r}
+df_ml <- subset(df_ml, select = -c(Identifier, Source, LIS, HB, MCV
+                                   ,MCH,MCHC, RDW, WBC, PLT, RETI, NEUTRO, RBC, LYMFO, MONO, BASO, EO, IJzergebrek, CRP, Anemie, FERRITINE, 
+                                                 TSAT, TRF, FE, BSE, FOLIUMZUUR, FZ_deficiency, LDH, HAPTO, Hemolyse,
+                                                 RET_HE, RBC_HE, DELTA_HE, HYPER_HE, HYPO_HE, HFR, IRF, MFR, LFR))
+```
+
+```{r}
+
+print(df_ml)
+```
+```{r}
+df_ml <- na.omit(df_ml)
+```
+
+
+```{r}
+colnames(df_ml)[0:2] <- c("Age", "Gender") 
+print(df_ml)
+```
+
+
+```{r}
+na_counts_base <- colSums(is.na(df_ml))
+print(na_counts_base)
+```
+
+```{r}
+write.csv(df_ml, "~/GitHub/Salmon-ai/Data/Cleaned_dataset_MMA_ML.csv")
+
+```
+
+
+## Filtering and labeling the data
+```{r}
+df_ml$deficiency <- ifelse(
+  df_ml$VITB12 < 140 | (df_ml$VITB12 < 400 & df_ml$MMZ >= 300), 
+  1, 
+  0
+)
+
+```
+
+
+```{r}
+
+df_ml <- df_ml %>%
+  mutate(
+    B12_deficient = ifelse(
+      VITB12 < 140 | (VITB12 >= 140 & VITB12 <= 300 & MMZ >= 300 & eGFR >= 90), 
+      1, 
+      0
+    )
+  )
+```
+
+```{r}
+print(df_ml)
+
+```
+
+
+# IMPUTED DATA + FILTERING 
 
 ```{r}
 df <- subset(df, select = -c(Identifier, Source, LIS, Classificatie_MMZ, Anemie, FERRITINE, 
@@ -23,7 +94,7 @@ df <- subset(df, select = -c(Identifier, Source, LIS, Classificatie_MMZ, Anemie,
 
 ```{r}
 colnames(df)[0:2] <- c("Age", "Gender") 
-colnames(df)[21] <- "Iron deficiency"
+
 
 print(df)
 ```
@@ -35,6 +106,7 @@ md.pattern(df)
 aggr_plot <- aggr(df, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
 
 ```
+
 ```{r}
 tempData <- mice(df,m=5,maxit=50,meth='pmm',seed=500)
 print(tempData)
