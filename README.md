@@ -1,20 +1,42 @@
 # Salmon-ai
 
 
+---
+
 ## How to Run
 
-### Prepare datasets
-Move input data `labeled_MMA_data.csv` into the current folder.
+### 1. Prepare Datasets
 
-Run All `DataPreparation.ipynb` notebook.
+Place `labeled_MMA_data.csv` in the project root.
 
-### Run Models
+Then run all cells in:
+
+```bash
+DataPreparation.ipynb
+```
+
+This will generate all required CSVs for model training.
+
+---
+
+### 2. Train & Evaluate Models
+
+To run all experiments:
 
 ```bash
 python run_all_experiments.py
 ```
 
-### Show Eval Results
+This script applies multiple models on all datasets and saves results to `ml_experiment_results.csv`.
 
-Run All `EvaluationResultsVisualization.ipynb` notebook.
+---
 
+### 3. Visualize Evaluation
+
+To visualize the evaluation results (F1, Accuracy):
+
+```bash
+EvaluationResultsVisualization.ipynb
+```
+
+This will generate comparison plots and LaTeX-style tables for reporting.
