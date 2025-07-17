@@ -1,6 +1,6 @@
 # Salmon-AI: MMA Risk Assessment
 
-Last modified: June 8, 2024
+Last modified: July 18, 2025
 
 ## Table of Contents
 
