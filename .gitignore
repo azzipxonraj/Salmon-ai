@@ -208,3 +208,4 @@ __marimo__/
 Data/Dataset_MMA.csv
 Data/Cleaned_dataset_MMA_ML_b12_label.csv
 *.csv
+.DS_Store

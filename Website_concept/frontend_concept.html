@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Salmon-AI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- Header -->
+  <nav class="navbar navbar-light" style="background-color: #ff8ca3;">
+    <div class="container-fluid justify-content-between">
+      <span class="navbar-brand mb-0 h1 text-white">Salmon-AI 🐟</span>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container my-5">
+    <div class="row justify-content-center align-items-start">
+
+      <!-- Input Form -->
+      <div class="col-md-4">
+        <div class="card border-danger">
+          <div class="card-body text-center">
+            <h5 class="card-title">Input Lab results CSV</h5>
+            <input type="file" class="form-control mb-3">
+
+            <button class="btn btn-outline-danger w-100 mb-3">Select patient ID</button>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Patient: #305 - JJ DUIKER">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Type the age of the Patient</label>
+              <input type="number" class="form-control" placeholder="0" min="0" max="120">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Select the gender of the Patient</label>
+              <select class="form-select">
+                <option>Select Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="form-check form-switch d-flex justify-content-center">
+              <input class="form-check-input" type="checkbox" role="switch" id="extendedReport">
+              <label class="form-check-label ms-2" for="extendedReport">Generate extended report</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Level & Actions -->
+      <div class="col-md-6">
+        <div class="card border-danger">
+          <div class="card-body text-center">
+            <h3 class="mb-3">MMA - Risk level</h3>
+            <button class="btn btn-danger mb-4" data-bs-toggle="tooltip" title="This is the MMA level of your patient, look in the table below for imediate action that needs to be taken">MMA LEVEL - 8</button>
+
+            <h5 class="text-start">Action - Per risk level</h5>
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>LEVEL</th>
+                    <th>Interpretation</th>
+                    <th>ICU Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="table-success"><td>1</td><td>Normal MMA</td><td>Monitor, no action</td></tr>
+                  <tr class="table-success"><td>2</td><td>Mild ↑ MMA – possible B12 deficiency</td><td>Check B12, consider supplement</td></tr>
+                  <tr class="table-warning"><td>3</td><td>↑ MMA – Renal dysfunction</td><td>Assess eGFR, renal protocol</td></tr>
+                  <tr class="table-warning"><td>4</td><td>↑ MMA – B12 deficiency likely</td><td>Start parenteral B12</td></tr>
+                  <tr class="table-warning"><td>5</td><td>↑ MMA – viral or B12 transient</td><td>Test both, monitor</td></tr>
+                  <tr class="table-danger"><td>6</td><td>↑ MMA – B12+ renal impairment</td><td>Complex: B12 + nephro care</td></tr>
+                  <tr class="table-danger"><td>7</td><td>↑ ↑ MMA – suspect NO cause</td><td>Stop, esp. high-dose B12</td></tr>
+                  <tr class="table-danger"><td>8</td><td>↑ ↑ MMA – Suspect CMMAB</td><td>Urgent genetics + metabolic consult</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-5 border-top">
+    <div class="container">
+      <div class="row">
+
+        <!-- About Us -->
+        <div class="col-md-6 text-start">
+          <h5>About Us</h5>
+          <p class="small">
+            This website serves as the front end for a machine learning project focused on AI in healthcare.
+            The model was developed to assess MMA-Risk levels based on various lab results. 
+            The goal is to provide clinical decision support using explainable AI methods.
+          </p>
+        </div>
+
+        <!-- Feedback -->
+        <div class="col-md-6 text-start">
+          <h5>Feedback</h5>
+          <p class="small">
+            To help us improve, please tell us about your experience or any bugs you might find.<br>
+            Contact us via GitHub:
+          </p>
+          <ul class="small list-unstyled">
+            <li><strong>Greete</strong> – Bioinformatics engineer</li>
+            <li><strong>Huseyin</strong> – CTO</li>
+            <li><strong>Jarro</strong> – Lead data scientist</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+</body>
+</html>
