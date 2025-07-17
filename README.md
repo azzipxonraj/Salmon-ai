@@ -40,3 +40,26 @@ EvaluationResultsVisualization.ipynb
 ```
 
 This will generate comparison plots and LaTeX-style tables for reporting.
+
+
+## 📊 Metric Comparison Table
+
+![Metric Comparison Table 1](table1_accuracy_f1.png)
+![Metric Comparison Table 2](table2_auc_precision_recall.png)
+
+
+## 🔍 XGBoost Confusion Matrices
+
+![XGBoost - Primary Columns Impute Missing](xgboost_primary_columns_impute_missing_confmat.png)
+![XGBoost - Drop Missing](xgboost_primary_columns_drop_missing_confmat.png)
+![XGBoost - MICE <10](xgboost_mice_with_columns_missing_lt_10_confmat.png)
+
+## 🧠 XGBoost Feature Importances
+
+![XGBoost - Feature Importance Impute](xgboost_primary_columns_impute_missing_feature_importance.png)
+![XGBoost - Feature Importance MICE <65](xgboost_mice_with_columns_missing_lt_65_feature_importance.png)
+
+## 🔍 HistGB Confusion Matrices
+
+![HistGB - Impute](histgb_primary_columns_impute_missing_confmat.png)
+![HistGB - Drop Missing](histgb_primary_columns_drop_missing_confmat.png)
