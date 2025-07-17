@@ -7,9 +7,9 @@ Last modified: June 8, 2024
   * [Introduction](#Introduction)
   * [Features](#Features)
   * [Usage](#Usage)
-      * [Web Application Usage](#Web Application Usage)
-      * [How to Run (Model Training & Evaluation)](#How to Run (Model Training & Evaluation))
-  * [About the Project](#About the Project)
+      * Web Application Usage
+      * How to Run (Model Training & Evaluation
+  * [About the Project](#About_the_Project)
   * [Feedback](#Feedback)
   * [License](#License)
 
