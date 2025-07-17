@@ -108,7 +108,7 @@ Your feedback is invaluable in helping us improve Salmon-AI and address any bugs
 
   * **Greete** – Bioinformatics Engineer
   * **Huseyin** – CTO
-  * **Jarro** – Lead Data Scientist
+  * **Jarno** – Lead Data Scientist
 
 -----
 
