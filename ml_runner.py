@@ -14,7 +14,8 @@ from sklearn.preprocessing import label_binarize
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
-from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
+
 import seaborn as sns
 
 
@@ -61,6 +62,13 @@ def get_model(name, num_class):
         return CatBoostClassifier(loss_function="MultiClass", verbose=False)
     elif name == "histgb":
         return HistGradientBoostingClassifier()
+    elif name == "randomforest":
+        return RandomForestClassifier(
+            n_estimators=100, # Number of trees in the forest
+            max_depth=10,     # Reduced from default to prevent deep trees from overfitting
+            min_samples_leaf=3, # Minimum samples in a leaf node
+            random_state=42   # For reproducibility
+        )
     else:
         raise ValueError(f"Unsupported model: {name}")
 
