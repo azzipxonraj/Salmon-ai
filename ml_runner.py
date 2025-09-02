@@ -49,7 +49,11 @@ def get_model(name, num_class):
             objective="multi:softprob",
             num_class=num_class,
             eval_metric="mlogloss",
-            enable_categorical=True
+            enable_categorical=True,
+            max_depth=4,         # Reduced from default 6 to prevent overfitting
+            learning_rate=0.05,   # Slower learning rate to combat overfitting
+            subsample=0.8,       # Use 80% of data for each tree
+            colsample_bytree=0.8,# Use 80% of features for each tree
         )
     elif name == "lightgbm":
         return LGBMClassifier(objective="multiclass", num_class=num_class)
